@@ -1,0 +1,32 @@
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "hemendradevatwal-1d97b",
+          "configurations": {
+            "android": "1:165105899359:android:e27c640aa72ec75324c8ea",
+            "ios": "1:165105899359:ios:8b9a5abf8d11542b24c8ea",
+            "macos": "1:165105899359:ios:8b9a5abf8d11542b24c8ea",
+            "web": "1:165105899359:web:90138ec2b483b57724c8ea",
+            "windows": "1:165105899359:web:8ac0f8205d8605a624c8ea"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
