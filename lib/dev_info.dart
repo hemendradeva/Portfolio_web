@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:portfolio/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,6 +25,7 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
   late Animation<double> _scaleAnimation;
 
   bool _isHovering = false;
+  bool _isHovering1 = false;
   bool _isButtonHovered = false;
 
   @override
@@ -114,21 +116,14 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          colors: [
+            const Color(0xFF0F172A), // dark blue
+            const Color(0xFF1E293B),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white,
-            Colors.blue.shade50,
-          ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,13 +161,15 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
                   position: _slideAnimation2,
                   child: FadeTransition(
                     opacity: _fadeInAnimation,
-                    child: const Text(
+                    child: Text(
                       Strings.name,
                       style: TextStyle(
-                        fontSize: 48,
+                        fontSize: 52,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                        height: 1.1,
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                            colors: [Colors.blueAccent, Colors.pinkAccent],
+                          ).createShader(const Rect.fromLTWH(0, 0, 300, 70)),
                       ),
                     ),
                   ),
@@ -204,12 +201,46 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "I build beautiful mobile and web apps using Flutter.",
-                              style: TextStyle(
-                                fontSize: 20,
-                                height: 1.5,
-                                color: _isHovering ? Colors.black87 : Colors.black54,
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: _isHovering
+                                    ? Colors.white.withOpacity(0.15)   // 👈 brighter on hover
+                                    : Colors.white.withOpacity(0.06),
+
+                                borderRadius: BorderRadius.circular(16),
+
+                                border: Border.all(
+                                  color: _isHovering
+                                      ? Colors.blueAccent.withOpacity(0.5)  // 👈 highlight border
+                                      : Colors.white.withOpacity(0.08),
+                                ),
+
+                                boxShadow: _isHovering
+                                    ? [
+                                  BoxShadow(
+                                    color: Colors.blueAccent.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ]
+                                    : [],
+                              ),
+
+                              child: AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 300),
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  height: 1.6,
+                                  color: _isHovering
+                                      ? Colors.white       // 👈 full white on hover
+                                      : Colors.white70,
+                                ),
+                                child: const Text(
+                                  "I build beautiful mobile and web apps using Flutter.",
+                                ),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -235,23 +266,28 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
                   position: _slideAnimation4,
                   child: FadeTransition(
                     opacity: _fadeInAnimation,
-                    child: Row(
+                    child: Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         MouseRegion(
                           onEnter: (_) => setState(() => _isButtonHovered = true),
                           onExit: (_) => setState(() => _isButtonHovered = false),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            transform: _isButtonHovered ? Matrix4.translationValues(0, -5, 0) : Matrix4.identity(),
+                            transform: _isButtonHovered
+                                ? Matrix4.translationValues(0, -5, 0)
+                                : Matrix4.identity(),
                             child: ElevatedButton(
-                              onPressed: () => launchUrl(
-                                Uri.parse(
-                                    Strings.resumePDFLink),
-                              ),
+                              onPressed: () => launchUrl(Uri.parse(Strings.resumePDFLink)),
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                backgroundColor: _isButtonHovered ? Colors.blue.shade700 : Colors.white,
-                                foregroundColor: _isButtonHovered ? Colors.white : Colors.blue.shade700,
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                backgroundColor:
+                                _isButtonHovered ? Colors.blue.shade700 : Colors.white,
+                                foregroundColor:
+                                _isButtonHovered ? Colors.white : Colors.blue.shade700,
                                 elevation: _isButtonHovered ? 8 : 2,
                                 shadowColor: Colors.blue.withOpacity(0.5),
                                 shape: RoundedRectangleBorder(
@@ -264,10 +300,10 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.download_rounded),
-                                  const SizedBox(width: 8),
-                                  const Text(
+                                children: const [
+                                  Icon(Icons.download_rounded),
+                                  SizedBox(width: 8),
+                                  Text(
                                     Strings.downloadResume,
                                     style: TextStyle(
                                       fontSize: 16,
@@ -279,38 +315,62 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+
+                        /// 👇 Social Links
                         _buildSocialLinks(),
                       ],
-                    ),
+                    )
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 40),
-          ScaleTransition(
-            scale: _scaleAnimation,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(
-                    0,
-                    5 * math.sin((_controller.value * 2 * math.pi) + math.pi),
+          const SizedBox(width: 10),
+          Expanded(
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(
+                      0,
+                      10 * math.sin(_controller.value * 2 * math.pi), // smoother float
+                    ),
+                    child: child,
+                  );
+                },
+                child: MouseRegion(
+                  onEnter: (_) => setState(() => _isHovering1 = true),
+                  onExit: (_) => setState(() => _isHovering1 = false),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    transform: _isHovering1
+                        ? (Matrix4.identity()..scale(1.05)) // 👈 zoom on hover
+                        : Matrix4.identity(),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: _isHovering1
+                          ? [
+                        BoxShadow(
+                          color: Colors.blueAccent.withOpacity(0.4),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                        ),
+                      ]
+                          : [],
+                    ),
+                    child: Lottie.network(
+                      "https://assets2.lottiefiles.com/packages/lf20_fcfjwiyb.json",
+                      height: 300,
+                      fit: BoxFit.contain,
+                      repeat: true,
+                    ),
                   ),
-                  child: child,
-                );
-              },
-              child: MouseRegion(
-                onEnter: (_) => _startImageAnimation(),
-                child: SvgPicture.asset(
-                  'assets/svg/dev_logo.svg',
-                  height: 350,
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -321,23 +381,25 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          colors: [
+            const Color(0xFF0F172A), // dark blue
+            const Color(0xFF1E293B),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white,
-            Colors.blue.shade50,
-          ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ScaleTransition(
             scale: _scaleAnimation,
-            child: SvgPicture.asset(
-              'assets/svg/dev_logo.svg',
-              height: 200,
+            child: Lottie.network(
+              "https://assets2.lottiefiles.com/packages/lf20_fcfjwiyb.json",
+              height: 350,
+              fit: BoxFit.contain,
+              repeat: true,
             ),
           ),
           const SizedBox(height: 32),
@@ -385,11 +447,23 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
             position: _slideAnimation3,
             child: FadeTransition(
               opacity: _fadeInAnimation,
-              child: const Text(
-                "I build beautiful mobile and web apps using Flutter.",
-                style: TextStyle(fontSize: 18, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                child: Text(
+                  "I build beautiful mobile and web apps using Flutter.",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white70,
+                    height: 1.6,
+                  ),
+                ),
+              )
             ),
           ),
           const SizedBox(height: 24),

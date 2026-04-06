@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:portfolio/about_section.dart';
 import 'package:portfolio/dev_info.dart';
 import 'package:portfolio/header.dart';
 import 'package:portfolio/modules/components/animated_background.dart';
 import 'package:portfolio/project_section.dart';
 import 'package:portfolio/skills.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'contact_selection.dart';
+import 'routes/app_routes.dart';
 
 class PortfolioHomePage extends StatefulWidget {
   const PortfolioHomePage({super.key});
@@ -19,6 +24,7 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
 
   // Global keys for each section
   final GlobalKey aboutKey = GlobalKey();
+  final GlobalKey contactKey = GlobalKey();
   final GlobalKey skillsKey = GlobalKey();
   final GlobalKey projectsKey = GlobalKey();
 
@@ -47,8 +53,37 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: TextButton(
+                            onPressed: () => _openFormPage(),
+                            child: const Text(
+                              "Create Your Website 🚀",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       Header(
                         aboutKey: aboutKey,
+                        contactKey: contactKey,
                         projectsKey: projectsKey,
                         scrollController: scrollController,
                         skillsKey: skillsKey,
@@ -61,8 +96,8 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
                       ProjectsSection(widgetKey: projectsKey),
                       const SizedBox(height: 60),
                       AboutSection(widgetKey: aboutKey),
-                      // const SizedBox(height: 60),
-                      // const ContactSection(),
+                      const SizedBox(height: 60),
+                      ContactSection(contactKey: contactKey),
                     ],
                   ),
                 ),
@@ -72,5 +107,15 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
         ),
       ),
     );
+  }
+
+  void _openFormPage() async {
+    // final url = Uri.parse("https://docs.google.com/forms/d/e/1FAIpQLSdS-0_7PxTmu44ZmDLp1OgmLcjneZ0eYw8wWc1KU9VQM2g3AQ/viewform?usp=publish-editor");
+    //
+    // await launchUrl(
+    //   url,
+    //   mode: LaunchMode.externalApplication, // 👈 opens in browser
+    // );
+    context.push(AppRoutes.formsTab);
   }
 }

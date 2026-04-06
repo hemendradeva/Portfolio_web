@@ -11,12 +11,14 @@ class AboutSection extends StatefulWidget {
   State<AboutSection> createState() => _AboutSectionState();
 }
 
-class _AboutSectionState extends State<AboutSection> with SingleTickerProviderStateMixin {
+class _AboutSectionState extends State<AboutSection>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
   double _avatarScale = 1.0;
+  bool _isDescHovering = false;
 
   @override
   void initState() {
@@ -73,47 +75,37 @@ class _AboutSectionState extends State<AboutSection> with SingleTickerProviderSt
 
     return Container(
       key: widget.widgetKey,
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      padding: EdgeInsets.symmetric(vertical: padding * 1.5, horizontal: padding),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: EdgeInsets.symmetric(
+        vertical: padding * 1.5,
+        horizontal: padding,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
+          colors: [
+            const Color(0xFF0F172A), // dark blue
+            const Color(0xFF1E293B),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade50.withOpacity(0.8),
-            Colors.purple.shade50.withOpacity(0.8),
-          ],
         ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: isMobile
           ? Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buildAvatar(avatarRadius),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 _buildTextContent(titleFontSize, descriptionFontSize, isMobile),
               ],
             )
           : Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildAvatar(avatarRadius),
-                const SizedBox(width: 30),
+                const SizedBox(width: 40),
                 Expanded(
-                  child: _buildTextContent(titleFontSize, descriptionFontSize, isMobile),
+                  child: _buildTextContent(
+                      titleFontSize, descriptionFontSize, isMobile),
                 ),
               ],
             ),
@@ -121,36 +113,23 @@ class _AboutSectionState extends State<AboutSection> with SingleTickerProviderSt
   }
 
   Widget _buildAvatar(double radius) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _avatarScale = 1.1;
-        });
-        Future.delayed(const Duration(milliseconds: 200), () {
-          setState(() {
-            _avatarScale = 1.0;
-          });
-        });
-      },
-      borderRadius: BorderRadius.circular(radius),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _avatarScale = 1.1),
+      onExit: (_) => setState(() => _avatarScale = 1.0),
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: AnimatedScale(
           scale: _avatarScale,
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.blue.shade300,
-                width: 3,
-              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
+                  color: Colors.blueAccent.withOpacity(0.4),
+                  blurRadius: 25,
+                  spreadRadius: 3,
+                )
               ],
             ),
             child: CircleAvatar(
@@ -163,34 +142,118 @@ class _AboutSectionState extends State<AboutSection> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildTextContent(double titleFontSize, double descriptionFontSize, bool isMobile) {
+  Widget _buildTextContent(
+    double titleFontSize,
+    double descriptionFontSize,
+    bool isMobile,
+  ) {
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Column(
-          crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
           children: [
-            Text(
-              Strings.about_me,
-              style: GoogleFonts.poppins(
-                fontSize: titleFontSize,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+            /// 🔥 Gradient Title
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [Colors.blueAccent, Colors.pinkAccent],
+              ).createShader(bounds),
+              child: Text(
+                Strings.about_me,
+                style: GoogleFonts.poppins(
+                  fontSize: titleFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-              textAlign: isMobile ? TextAlign.center : TextAlign.left,
             ),
-            const SizedBox(height: 12),
-            Text(
-              "I’m ${Strings.name}, a passionate Flutter developer with ${Strings.no_experience}+ years of experience building beautiful mobile and web apps using Flutter, Dart, and Firebase.",
-              style: GoogleFonts.poppins(
-                fontSize: descriptionFontSize,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey[800],
-                height: 1.5,
+
+            const SizedBox(height: 16),
+
+            /// 🔥 Description Card
+            MouseRegion(
+              onEnter: (_) => setState(() => _isDescHovering = true),
+              onExit: (_) => setState(() => _isDescHovering = false),
+              child: Column(
+                crossAxisAlignment:
+                isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                children: [
+
+                  /// 🔥 DESCRIPTION CARD
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    padding: const EdgeInsets.all(16),
+
+                    transform: _isDescHovering
+                        ? (Matrix4.identity()..scale(1.02)) // 👈 slight zoom
+                        : Matrix4.identity(),
+
+                    decoration: BoxDecoration(
+                      color: _isDescHovering
+                          ? Colors.white.withOpacity(0.12)   // brighter
+                          : Colors.white.withOpacity(0.05),
+
+                      borderRadius: BorderRadius.circular(16),
+
+                      border: Border.all(
+                        color: _isDescHovering
+                            ? Colors.blueAccent.withOpacity(0.5)
+                            : Colors.white.withOpacity(0.08),
+                      ),
+
+                      boxShadow: _isDescHovering
+                          ? [
+                        BoxShadow(
+                          color: Colors.blueAccent.withOpacity(0.25),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 8),
+                        ),
+                      ]
+                          : [],
+                    ),
+
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 300),
+                      style: GoogleFonts.poppins(
+                        fontSize: descriptionFontSize,
+                        height: 1.6,
+                        color: _isDescHovering
+                            ? Colors.white
+                            : Colors.white70,
+                      ),
+                      child: Text(
+                        "I’m ${Strings.name}, a passionate Flutter developer with ${Strings.no_experience}+ years of experience building beautiful mobile and web apps using Flutter, Dart, and Firebase.",
+                        textAlign:
+                        isMobile ? TextAlign.center : TextAlign.left,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  /// 🔥 BOTTOM LINE ANIMATION
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: _isDescHovering ? 120 : 50,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: _isDescHovering
+                            ? [Colors.blueAccent, Colors.pinkAccent]
+                            : [
+                          Colors.blueAccent.withOpacity(0.4),
+                          Colors.pinkAccent.withOpacity(0.4)
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ],
               ),
-              textAlign: isMobile ? TextAlign.center : TextAlign.left,
-            ),
+            )
           ],
         ),
       ),

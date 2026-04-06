@@ -3,12 +3,14 @@ import 'package:portfolio/strings.dart';
 
 class Header extends StatefulWidget {
   final GlobalKey aboutKey;
+  final GlobalKey contactKey;
   final GlobalKey skillsKey;
   final GlobalKey projectsKey;
   final ScrollController scrollController;
   const Header({
     super.key,
     required this.aboutKey,
+    required this.contactKey,
     required this.skillsKey,
     required this.projectsKey,
     required this.scrollController,
@@ -209,6 +211,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
                           width: 250, // Adjust as needed
                           child: AppDrawer(
                             aboutKey: widget.aboutKey,
+                            contactKey: widget.contactKey,
                             skillsKey: widget.skillsKey,
                             projectsKey: widget.projectsKey,
                             scrollController: widget.scrollController,
@@ -246,7 +249,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
                     GestureDetector(
                       onTap: () =>
                           scrollToSection(
-                              widget.aboutKey, widget.scrollController),
+                              widget.contactKey, widget.scrollController),
                       child: _buildNavItem('Contact', 3),
                     ),
                   ],
@@ -356,6 +359,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
                             width: 250,
                             child: AppDrawer(
                               aboutKey: widget.aboutKey,
+                              contactKey: widget.contactKey,
                               skillsKey: widget.skillsKey,
                               projectsKey: widget.projectsKey,
                               scrollController: widget.scrollController,
@@ -459,6 +463,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
 
 class AppDrawer extends StatelessWidget {
   final GlobalKey aboutKey;
+  final GlobalKey contactKey;
   final GlobalKey skillsKey;
   final GlobalKey projectsKey;
   final ScrollController scrollController;
@@ -466,6 +471,7 @@ class AppDrawer extends StatelessWidget {
   const AppDrawer({
     super.key,
     required this.aboutKey,
+    required this.contactKey,
     required this.skillsKey,
     required this.projectsKey,
     required this.scrollController,
@@ -561,7 +567,7 @@ class AppDrawer extends StatelessWidget {
               Icons.mail_outline,
               () {
                 Navigator.pop(context);
-                scrollToSection(aboutKey, scrollController);
+                scrollToSection(contactKey, scrollController);
               },
             ),
             const Spacer(),
